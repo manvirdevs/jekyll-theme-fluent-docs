@@ -1,0 +1,141 @@
+<!-- Left Navigation Sidebar -->
+<aside class="docs-sidebar" role="navigation" aria-label="Main navigation">
+  <div class="sidebar-container">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">
+        {% if site.docs_title %} {{ site.docs_title }} {% endif %}
+      </h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      {% if site.data.navigation.docs %}
+      <!-- Navigation from data file -->
+      {% for section in site.data.navigation.docs %}
+      <div class="nav-section">
+        {% if section.title %}
+        <h3 class="nav-section-title">{{ section.title }}</h3>
+        {% endif %}
+
+        <ul class="nav-list">
+          {% for item in section.items %}
+          <li class="nav-item">
+            <a
+              href="{{ item.url | relative_url }}"
+              class="nav-link {% if page.url == item.url %}active{% endif %}"
+            >
+              {{ item.title }}
+            </a>
+
+            {% if item.children %}
+            <ul class="nav-sublist">
+              {% for child in item.children %}
+              <li class="nav-subitem">
+                <a
+                  href="{{ child.url | relative_url }}"
+                  class="nav-sublink {% if page.url == child.url %}active{% endif %}"
+                >
+                  {{ child.title }}
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %} {% else %}
+      <!-- Default navigation based on pages -->
+      <div class="nav-section">
+        <ul class="nav-list">
+          {% comment %}
+            Sort pages by order attribute (or nav_order), then by title
+            Supports both 'order' and 'nav_order' front matter attributes
+          {% endcomment %}
+          {% assign all_pages = site.pages %}
+          
+          {% comment %}Create array for pages with order{% endcomment %}
+          {% assign ordered_pages = "" | split: "" %}
+          {% assign unordered_pages = "" | split: "" %}
+          
+          {% for page_item in all_pages %}
+            {% unless page_item.nav_exclude == true or page_item.title == nil or page_item.title == empty %}
+              {% assign page_order = page_item.order | default: page_item.nav_order %}
+              {% if page_order %}
+                {% assign ordered_pages = ordered_pages | push: page_item %}
+              {% else %}
+                {% assign unordered_pages = unordered_pages | push: page_item %}
+              {% endif %}
+            {% endunless %}
+          {% endfor %}
+          
+          {% comment %}Sort ordered pages by order value{% endcomment %}
+          {% assign sorted_ordered_pages = ordered_pages | sort: "order" %}
+          {% if sorted_ordered_pages.size == 0 %}
+            {% assign sorted_ordered_pages = ordered_pages | sort: "nav_order" %}
+          {% endif %}
+          
+          {% comment %}Sort unordered pages by title{% endcomment %}
+          {% assign sorted_unordered_pages = unordered_pages | sort: "title" %}
+          
+          {% comment %}Display ordered pages first{% endcomment %}
+          {% for page_item in sorted_ordered_pages %}
+            <li class="nav-item">
+              <a
+                href="{{ page_item.url | relative_url }}"
+                class="nav-link {% if page.url == page_item.url %}active{% endif %}"
+                {% if page_item.description %}title="{{ page_item.description }}"{% endif %}
+              >
+                {{ page_item.title }}
+              </a>
+            </li>
+          {% endfor %}
+          
+          {% comment %}Then display unordered pages{% endcomment %}
+          {% for page_item in sorted_unordered_pages %}
+            <li class="nav-item">
+              <a
+                href="{{ page_item.url | relative_url }}"
+                class="nav-link {% if page.url == page_item.url %}active{% endif %}"
+                {% if page_item.description %}title="{{ page_item.description }}"{% endif %}
+              >
+                {{ page_item.title }}
+              </a>
+            </li>
+          {% endfor %}
+          
+          {% comment %}Add recent posts section{% endcomment %}
+          {% assign recent_posts = site.posts %}
+          {% assign filtered_posts = "" | split: "" %}
+          {% for post in recent_posts %}
+            {% unless post.nav_exclude == true %}
+              {% assign filtered_posts = filtered_posts | push: post %}
+            {% endunless %}
+          {% endfor %}
+          {% if filtered_posts.size > 0 %}
+            {% assign sorted_posts = filtered_posts | reverse %}
+            <li class="nav-divider">Recent Posts</li>
+            {% for post in sorted_posts limit: 5 %}
+              <li class="nav-item nav-item--post">
+                <a
+                  href="{{ post.url | relative_url }}"
+                  class="nav-link {% if page.url == post.url %}active{% endif %}"
+                  {% if post.description %}title="{{ post.description }}"{% endif %}
+                >
+                  {{ post.title }}
+                  {% if post.date %}<span class="nav-date">{{ post.date | date: "%b %d" }}</span>{% endif %}
+                </a>
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+      {% endif %}
+    </nav>
+  </div>
+  <div class="sidebar-container">
+    <!-- {% if site.github.is_project_page %}
+      <span><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
+    {% endif %} -->
+  </div>
+</aside>

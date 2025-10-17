@@ -1,0 +1,69 @@
+<!-- Top Navigation Bar -->
+<header class="docs-topbar" role="banner">
+  <div class="topbar-container">
+    <div class="topbar-brand">
+      <a href="{{ '/' | relative_url }}" class="brand-link">
+        {% if site.logo %}
+        <img src="{{ site.logo | relative_url }}" alt="{{ site.title }}" class="brand-logo" />
+        {% endif %}
+        <span class="brand-title">{{ site.title | default: "Documentation" }}</span>
+      </a>
+    </div>
+
+    <!-- <div class="topbar-search">
+      <div class="search-container">
+        <fluent-text-field
+          type="search"
+          placeholder="Search documentation..."
+          class="search-input"
+          id="docs-search"
+        >
+          <span slot="start" class="search-icon ms-Icon ms-Icon--Search"></span>
+        </fluent-text-field>
+      </div>
+    </div> -->
+
+    <nav class="topbar-nav" role="navigation">
+      <ul class="nav-list">
+        {% for nav_item in site.data.navigation.main %}
+        <li class="nav-item">
+          <a
+            href="{{ nav_item.url | relative_url }}"
+            class="nav-link {% if page.url == nav_item.url %}active{% endif %}"
+          >
+            {{ nav_item.title }}
+          </a>
+        </li>
+        {% endfor %}
+
+        <!-- Default navigation if no data file -->
+        <!-- {% unless site.data.navigation.main %}
+        <li class="nav-item">
+          <a href="{{ '/' | relative_url }}" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ '/docs/' | relative_url }}" class="nav-link">Docs</a>
+        </li>
+        {% endunless %}
+      </ul> -->
+    </nav>
+
+    <div class="topbar-actions">
+      {% if site.github.repository_url %}
+      <a href="{{ site.github.repository_url }}" class="nav-link" title="View on GitHub">
+        <!-- <span class="ms-Icon ms-Icon--GitHub"></span> -->
+         View on Github
+      </a>
+      {% endif %}
+
+      <fluent-button
+        appearance="subtle"
+        id="theme-toggle"
+        title="Toggle theme"
+        class="theme-toggle"
+      >
+        <span class="ms-Icon ms-Icon--Sunny"></span>
+      </fluent-button>
+    </div>
+  </div>
+</header>

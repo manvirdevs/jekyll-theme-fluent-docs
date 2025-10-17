@@ -1,0 +1,84 @@
+// FluentUI Design System Variables
+
+// Colors - FluentUI Design Tokens
+:root {
+  // Neutral colors
+  --color-neutral-background: #ffffff;
+  --color-neutral-background-hover: #f5f5f5;
+  --color-neutral-background-pressed: #ebebeb;
+  --color-neutral-surface: #fafafa;
+  --color-neutral-foreground: #323130;
+  --color-neutral-foreground-2: #605e5c;
+  --color-neutral-foreground-3: #8a8886;
+
+  // Brand colors
+  --color-brand-primary: #0078d4;
+  --color-brand-primary-hover: #106ebe;
+  --color-brand-primary-pressed: #005a9e;
+
+  // Semantic colors
+  --color-success: #107c10;
+  --color-warning: #ff8c00;
+  --color-danger: #d13438;
+  --color-info: #0078d4;
+
+  // Borders
+  --color-border: #e1dfdd;
+  --color-border-hover: #c7c6c4;
+
+  // Shadows
+  --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.14), 0 0px 2px rgba(0, 0, 0, 0.12);
+  --shadow-4: 0 2px 4px rgba(0, 0, 0, 0.14), 0 0px 2px rgba(0, 0, 0, 0.12);
+  --shadow-8: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0px 2px rgba(0, 0, 0, 0.12);
+  --shadow-16: 0 8px 16px rgba(0, 0, 0, 0.14), 0 0px 2px rgba(0, 0, 0, 0.12);
+
+  // Spacing - 4px base unit
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+  --spacing-xxxl: 32px;
+
+  // Border radius
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 6px;
+
+  // Typography
+  --font-family-base: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue",
+    sans-serif;
+  --font-family-monospace: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono",
+    "Courier New", monospace;
+
+  // Layout dimensions
+  --topbar-height: 56px;
+  --sidebar-width: 280px;
+  --toc-width: 240px;
+  --content-max-width: 800px;
+
+  // Z-index layers
+  --z-topbar: 1000;
+  --z-sidebar: 900;
+  --z-dropdown: 1100;
+  --z-modal: 1200;
+}
+
+// Dark theme variables
+[data-theme="dark"] {
+  --color-neutral-background: #1e1e1e;
+  --color-neutral-background-hover: #292929;
+  --color-neutral-background-pressed: #333333;
+  --color-neutral-surface: #252525;
+  --color-neutral-foreground: #ffffff;
+  --color-neutral-foreground-2: #c8c6c4;
+  --color-neutral-foreground-3: #a19f9d;
+
+  --color-brand-primary: #479ef5;
+  --color-brand-primary-hover: #62abf5;
+  --color-brand-primary-pressed: #77b7f7;
+
+  --color-border: #484644;
+  --color-border-hover: #5d5a58;
+}

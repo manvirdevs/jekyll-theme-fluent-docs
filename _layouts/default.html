@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% if page.title %}{{ page.title }} - {% endif %}{{ site.title | default: "Documentation" }}
+    </title>
+    <meta
+      name="description"
+      content="{{ page.description | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}"
+    />
+
+    <!-- Fluent UI Web Components -->
+    <script
+      type="module"
+      src="https://unpkg.com/@fluentui/web-components@2.6.1/dist/web-components.js"
+    ></script>
+
+    <!-- FluentUI CSS -->
+    <link
+      rel="stylesheet"
+      href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.002/office-ui-fabric-core/11.0.0/css/fabric.min.css"
+    />
+
+    <!-- Fabric MDL2 Icons Font -->
+    <style>
+      @font-face {
+        font-family: "FabricMDL2Icons";
+        src: url("https://static2.sharepointonline.com/files/fabric/assets/icons/fabricmdl2icons-2.68.woff2")
+            format("woff2"),
+          url("https://static2.sharepointonline.com/files/fabric/assets/icons/fabricmdl2icons-2.68.woff")
+            format("woff"),
+          url("https://static2.sharepointonline.com/files/fabric/assets/icons/fabricmdl2icons-2.68.ttf")
+            format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+
+    <!-- Theme styles -->
+    <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="fluent-docs">
+    <div class="docs-container">
+      <!-- Top Navigation Bar -->
+      {% include topbar.html %}
+
+      <div class="docs-layout">
+        <!-- Left Navigation -->
+        {% include left-nav.html %}
+
+        <!-- Main Content Area -->
+        <main class="docs-main" role="main">
+          <div class="docs-content">
+            <!-- {% if page.title %}
+            <header class="docs-header">
+              <h1 class="docs-title">{{ page.title }}</h1>
+              {% if page.description %}
+              <p class="docs-description">{{ page.description }}</p>
+              {% endif %} {% if page.date %}
+              <div class="docs-meta">
+                <span class="docs-date">Last updated: {{ page.date | date: "%B %d, %Y" }}</span>
+              </div>
+              {% endif %}
+            </header>
+            {% endif %} -->
+
+            <div class="docs-body">{{ content }}</div>
+
+            {% if page.layout == 'post' or page.layout == 'page' %}
+            <footer class="docs-footer">
+              <div class="docs-feedback">
+                <p>Was this page helpful?</p>
+                <div class="feedback-buttons">
+                  <fluent-button appearance="outline" size="small">Yes</fluent-button>
+                  <fluent-button appearance="outline" size="small">No</fluent-button>
+                </div>
+              </div>
+            </footer>
+            {% endif %}
+          </div>
+        </main>
+
+        <!-- Right Sidebar (Table of Contents) -->
+        {% include right-sidebar.html %}
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ '/assets/js/docs.js' | relative_url }}"></script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+# Navigation configuration for the documentation site
+
+main:
+  - title: Home
+    url: /
+  - title: Documentation
+    url: /docs/
+  - title: API Reference
+    url: /api/
+  - title: Examples
+    url: /examples/
+
+docs:
+  - title: Getting Started
+    items:
+      - title: Installation
+        url: /docs/installation/
+      - title: Quick Start
+        url: /docs/quick-start/
+      - title: Configuration
+        url: /docs/configuration/
+
+  - title: Guides
+    items:
+      - title: Creating Layouts
+        url: /docs/layouts/
+      - title: Adding Content
+        url: /docs/content/
+      - title: Styling
+        url: /docs/styling/
+        children:
+          - title: CSS Variables
+            url: /docs/styling/variables/
+          - title: Components
+            url: /docs/styling/components/
+
+  - title: Advanced
+    items:
+      - title: Customization
+        url: /docs/customization/
+      - title: Deployment
+        url: /docs/deployment/

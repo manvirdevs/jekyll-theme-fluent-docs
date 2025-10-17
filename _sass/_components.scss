@@ -1,0 +1,216 @@
+// Component-specific styles
+
+// Search component
+.search-container {
+  position: relative;
+
+  .search-icon {
+    color: var(--color-neutral-foreground-3);
+    font-size: 16px;
+  }
+}
+
+// Theme toggle button
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+
+  .ms-Icon {
+    font-size: 16px;
+  }
+}
+
+// Fluent UI Icons integration with fallbacks
+.ms-Icon {
+  font-family: "FabricMDL2Icons", "Fabric MDL2 Icons", sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  font-size: 16px;
+}
+
+// Icon definitions with Unicode fallbacks
+.ms-Icon--Search:before {
+  content: "\E721";
+}
+
+.ms-Icon--GitHub:before {
+  content: "\E1A3";
+}
+
+.ms-Icon--Sunny:before {
+  content: "\E706";
+}
+
+.ms-Icon--ClearNight:before {
+  content: "\E9C2";
+}
+
+.ms-Icon--Edit:before {
+  content: "\E70F";
+}
+
+.ms-Icon--History:before {
+  content: "\E81C";
+}
+
+.ms-Icon--CollapseMenu:before {
+  content: "\EF66";
+}
+
+// Fallback for when Fabric icons don't load
+@supports not (font-family: "FabricMDL2Icons") {
+  .ms-Icon--Search:before {
+    content: "🔍";
+  }
+  .ms-Icon--GitHub:before {
+    content: "⚡";
+  }
+  .ms-Icon--Sunny:before {
+    content: "☀️";
+  }
+  .ms-Icon--ClearNight:before {
+    content: "🌙";
+  }
+  .ms-Icon--Edit:before {
+    content: "✏️";
+  }
+  .ms-Icon--History:before {
+    content: "📅";
+  }
+}
+.ms-Icon--History:before {
+  content: "\E81C";
+}
+
+// Alert/Notice components
+.alert {
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  margin: var(--spacing-lg) 0;
+  border: 1px solid;
+
+  &.alert-info {
+    background-color: rgba(0, 120, 212, 0.1);
+    border-color: var(--color-info);
+    color: var(--color-info);
+  }
+
+  &.alert-success {
+    background-color: rgba(16, 124, 16, 0.1);
+    border-color: var(--color-success);
+    color: var(--color-success);
+  }
+
+  &.alert-warning {
+    background-color: rgba(255, 140, 0, 0.1);
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+  }
+
+  &.alert-danger {
+    background-color: rgba(209, 52, 56, 0.1);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+}
+
+// Code syntax highlighting (override if needed)
+.highlight {
+  background-color: var(--color-neutral-surface) !important;
+  border-radius: var(--border-radius-md);
+
+  pre {
+    background: none;
+    border: none;
+    margin: 0;
+  }
+}
+
+// Breadcrumb navigation
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+  font-size: 13px;
+
+  .breadcrumb-item {
+    color: var(--color-neutral-foreground-2);
+
+    &:not(:last-child)::after {
+      content: "/";
+      margin-left: var(--spacing-xs);
+      color: var(--color-neutral-foreground-3);
+    }
+
+    a {
+      color: var(--color-neutral-foreground-2);
+
+      &:hover {
+        color: var(--color-brand-primary);
+        text-decoration: none;
+      }
+    }
+
+    &:last-child {
+      color: var(--color-neutral-foreground);
+      font-weight: 600;
+    }
+  }
+}
+
+// Tag/Badge components
+.tag,
+.badge {
+  display: inline-block;
+  padding: 2px var(--spacing-xs);
+  background-color: var(--color-neutral-surface);
+  color: var(--color-neutral-foreground-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.tag-primary {
+    background-color: rgba(0, 120, 212, 0.1);
+    color: var(--color-brand-primary);
+    border-color: var(--color-brand-primary);
+  }
+}
+
+// Loading states
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  color: var(--color-neutral-foreground-3);
+}
+
+// Print styles
+@media print {
+  .docs-topbar,
+  .docs-sidebar,
+  .docs-toc-sidebar {
+    display: none !important;
+  }
+
+  .docs-main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .docs-content {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

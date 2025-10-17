@@ -1,0 +1,161 @@
+<!-- Static Table of Contents Generator -->
+<nav class="toc-nav" id="toc-nav">
+  {% comment %}
+    Generate TOC from front matter or auto-detect from content
+    
+    Configuration options (in _config.yml or page front matter):
+    - toc_max_level: Maximum heading level to include (default: 3)
+    - toc_min_level: Minimum heading level to include (default: 2)
+    
+    Examples:
+    # _config.yml
+    toc_max_level: 2  # Only show H2 headings
+    toc_min_level: 2
+    
+    # page front matter
+    ---
+    toc_max_level: 4  # Show H2, H3, H4 headings
+    toc_min_level: 2
+    ---
+  {% endcomment %}
+  
+  {% if page.toc %}
+    <!-- Manual TOC from front matter -->
+    <ul class="toc-list">
+      {%- for item in page.toc -%}
+        <li>
+          <a href="{{ item.url }}" class="toc-link">{{ item.title }}</a>
+          {%- if item.children -%}
+            <ul class="toc-sublist">
+              {%- for child in item.children -%}
+                <li><a href="{{ child.url }}" class="toc-link toc-link--sub">{{ child.title }}</a></li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {% else %}
+    <!-- Auto-generated TOC from markdown content -->
+    {% assign headings_found = false %}
+    {% assign markdown_content = page.content %}
+    {% assign lines = markdown_content | split: '
+' %}
+    
+    {% comment %}Get TOC max level from config or page, default to 3{% endcomment %}
+    {% assign toc_max_level = site.toc_max_level | default: page.toc_max_level | default: 3 %}
+    {% assign toc_min_level = site.toc_min_level | default: page.toc_min_level | default: 2 %}
+    
+    <ul class="toc-list" id="toc-list">
+      {%- for line in lines -%}
+        {% assign trimmed = line | strip %}
+        {%- if trimmed contains '#' and trimmed != '' -%}
+          {% comment %}Count # characters at start of line{% endcomment %}
+          {% assign level = 0 %}
+          {% assign title = trimmed %}
+          
+          {%- if trimmed contains '###### ' -%}
+            {% assign level = 6 %}
+            {% assign title = trimmed | remove_first: '###### ' %}
+          {%- elsif trimmed contains '##### ' -%}
+            {% assign level = 5 %}
+            {% assign title = trimmed | remove_first: '##### ' %}
+          {%- elsif trimmed contains '#### ' -%}
+            {% assign level = 4 %}
+            {% assign title = trimmed | remove_first: '#### ' %}
+          {%- elsif trimmed contains '### ' -%}
+            {% assign level = 3 %}
+            {% assign title = trimmed | remove_first: '### ' %}
+          {%- elsif trimmed contains '## ' -%}
+            {% assign level = 2 %}
+            {% assign title = trimmed | remove_first: '## ' %}
+          {%- elsif trimmed contains '# ' -%}
+            {% assign level = 1 %}
+            {% assign title = trimmed | remove_first: '# ' %}
+          {%- endif -%}
+          
+          {%- if level >= toc_min_level and level <= toc_max_level -%}
+            {% assign headings_found = true %}
+            
+            {% comment %}Clean markdown links: [Text](URL) -> Text{% endcomment %}
+            {% assign clean_title = title %}
+            {%- if title contains '[' and title contains '](' -%}
+              {% assign link_parts = title | split: '[' %}
+              {% assign clean_title = link_parts[0] %}
+              {%- for part in link_parts offset: 1 -%}
+                {% assign bracket_parts = part | split: '](' %}
+                {%- if bracket_parts.size > 0 -%}
+                  {% assign clean_title = clean_title | append: bracket_parts[0] %}
+                  {%- if bracket_parts.size > 1 -%}
+                    {% assign url_end = bracket_parts[1] | split: ')' %}
+                    {%- if url_end.size > 1 -%}
+                      {% assign clean_title = clean_title | append: url_end[1] %}
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+            
+            {% assign title = clean_title | strip %}
+            {% assign anchor = title | slugify %}
+            
+            <li class="toc-item toc-item--level-{{ level }}">
+              <a href="#{{ anchor }}" class="toc-link" data-level="{{ level }}">{{ title }}</a>
+            </li>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+    
+    {%- unless headings_found -%}
+      <p class="no-toc">No headings found on this page.</p>
+    {%- endunless -%}
+  {% endif %}
+</nav>
+
+{% comment %}
+  Add JavaScript for smooth scrolling and active highlighting
+  This enhances the static TOC with interactive features
+{% endcomment %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tocLinks = document.querySelectorAll(".toc-link");
+    const headings = document.querySelectorAll("h2, h3, h4, h5, h6");
+
+    // Ensure headings have IDs that match TOC links
+    headings.forEach(function (heading) {
+      if (!heading.id) {
+        heading.id = heading.textContent
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .trim();
+      }
+    });
+
+    // Highlight current section on scroll
+    function highlightCurrentSection() {
+      let current = "";
+      const scrollPos = window.scrollY + 100;
+
+      headings.forEach(function (heading) {
+        if (heading.offsetTop <= scrollPos) {
+          current = heading.id;
+        }
+      });
+
+      tocLinks.forEach(function (link) {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === "#" + current) {
+          link.classList.add("active");
+        }
+      });
+    }
+
+    // Initial highlight
+    highlightCurrentSection();
+
+    // Update on scroll
+    window.addEventListener("scroll", highlightCurrentSection);
+  });
+</script>

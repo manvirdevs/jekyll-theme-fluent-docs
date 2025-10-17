@@ -1,0 +1,40 @@
+<!-- Right Sidebar (Table of Contents) -->
+<aside class="docs-toc-sidebar" role="complementary" aria-label="Table of contents">
+  <div class="toc-container">
+    <div class="toc-header">
+      <h3 class="toc-title">On this page</h3>
+    </div>
+
+    {% include toc.html %}
+
+    <!-- Additional sidebar content -->
+    {% if page.sidebar_content %}
+    <div class="sidebar-content">{{ page.sidebar_content | markdownify }}</div>
+    {% endif %}
+
+    <!-- Edit page link -->
+    {% if site.github_repo and page.path %}
+    <div class="edit-section">
+      <a
+        href="{{ site.github_repo }}/edit/main/{{ page.path }}"
+        class="edit-link"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="ms-Icon ms-Icon--Edit"></span>
+        Edit this page
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Last updated info -->
+    {% if page.last_modified_at or page.date %}
+    <div class="page-meta">
+      <p class="meta-item">
+        <span class="ms-Icon ms-Icon--History"></span>
+        Last updated: {{ page.last_modified_at | default: page.date | date: "%B %d, %Y" }}
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</aside>
