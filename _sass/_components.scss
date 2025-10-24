@@ -55,12 +55,20 @@
   content: "\E70F";
 }
 
+.ms-Icon--Feedback:before {
+  content: "\ED15";
+}
+
 .ms-Icon--History:before {
   content: "\E81C";
 }
 
 .ms-Icon--CollapseMenu:before {
   content: "\EF66";
+}
+
+.ms-Icon--GitHub:before {
+  content: "\F65E";
 }
 
 // Fallback for when Fabric icons don't load
@@ -213,4 +221,54 @@
     padding: 0 !important;
     margin: 0 !important;
   }
+}
+
+// ...existing code...
+
+// Avatar Group Component
+.avatar-group {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-sm);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-brand-primary);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  border: 2px solid var(--color-background);
+  margin-left: -8px;
+  cursor: default;
+  position: relative;
+  
+  &:first-child {
+    margin-left: 0;
+  }
+  
+  &:hover {
+    z-index: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  // Generate different colors for avatars
+  &:nth-child(1) { background: #0078d4; }
+  &:nth-child(2) { background: #8764b8; }
+  &:nth-child(3) { background: #498205; }
+  &:nth-child(4) { background: #c239b3; }
+  &:nth-child(5) { background: #d83b01; }
+  &:nth-child(n+6) { background: #107c10; }
+}
+
+.contributors-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
 }

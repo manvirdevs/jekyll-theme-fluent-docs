@@ -1,6 +1,6 @@
 <!-- Static Table of Contents Generator -->
 <nav class="toc-nav" id="toc-nav">
-  {% comment %}
+  {%- comment -%}
     Generate TOC from front matter or auto-detect from content
     
     Configuration options (in _config.yml or page front matter):
@@ -17,7 +17,7 @@
     toc_max_level: 4  # Show H2, H3, H4 headings
     toc_min_level: 2
     ---
-  {% endcomment %}
+  {%- endcomment -%}
   
   {% if page.toc %}
     <!-- Manual TOC from front matter -->
@@ -37,68 +37,65 @@
     </ul>
   {% else %}
     <!-- Auto-generated TOC from markdown content -->
-    {% assign headings_found = false %}
-    {% assign markdown_content = page.content %}
+    {% assign headings_found = false -%}
+    {% assign markdown_content = page.content -%}
     {% assign lines = markdown_content | split: '
-' %}
+' -%}
     
     {% comment %}Get TOC max level from config or page, default to 3{% endcomment %}
-    {% assign toc_max_level = site.toc_max_level | default: page.toc_max_level | default: 3 %}
-    {% assign toc_min_level = site.toc_min_level | default: page.toc_min_level | default: 2 %}
+    {% assign toc_max_level = site.toc_max_level | default: page.toc_max_level | default: 3 -%}
+    {% assign toc_min_level = site.toc_min_level | default: page.toc_min_level | default: 2 -%}
     
     <ul class="toc-list" id="toc-list">
       {%- for line in lines -%}
-        {% assign trimmed = line | strip %}
+        {% assign trimmed = line | strip -%}
         {%- if trimmed contains '#' and trimmed != '' -%}
           {% comment %}Count # characters at start of line{% endcomment %}
-          {% assign level = 0 %}
-          {% assign title = trimmed %}
+          {% assign level = 0 -%}
+          {% assign title = trimmed -%}
           
           {%- if trimmed contains '###### ' -%}
-            {% assign level = 6 %}
-            {% assign title = trimmed | remove_first: '###### ' %}
+            {% assign level = 6 -%}
+            {% assign title = trimmed | remove_first: '###### '- %}
           {%- elsif trimmed contains '##### ' -%}
-            {% assign level = 5 %}
-            {% assign title = trimmed | remove_first: '##### ' %}
+            {% assign level = 5 -%}
+            {% assign title = trimmed | remove_first: '##### ' -%}
           {%- elsif trimmed contains '#### ' -%}
-            {% assign level = 4 %}
-            {% assign title = trimmed | remove_first: '#### ' %}
+            {% assign level = 4 -%}
+            {% assign title = trimmed | remove_first: '#### ' -%}
           {%- elsif trimmed contains '### ' -%}
-            {% assign level = 3 %}
-            {% assign title = trimmed | remove_first: '### ' %}
+            {% assign level = 3 -%}
+            {% assign title = trimmed | remove_first: '### ' -%}
           {%- elsif trimmed contains '## ' -%}
-            {% assign level = 2 %}
-            {% assign title = trimmed | remove_first: '## ' %}
+            {% assign level = 2 -%}
+            {% assign title = trimmed | remove_first: '## ' -%}
           {%- elsif trimmed contains '# ' -%}
-            {% assign level = 1 %}
-            {% assign title = trimmed | remove_first: '# ' %}
+            {% assign level = 1 -%}
+            {% assign title = trimmed | remove_first: '# ' -%}
           {%- endif -%}
-          
+
           {%- if level >= toc_min_level and level <= toc_max_level -%}
             {% assign headings_found = true %}
-            
             {% comment %}Clean markdown links: [Text](URL) -> Text{% endcomment %}
             {% assign clean_title = title %}
             {%- if title contains '[' and title contains '](' -%}
-              {% assign link_parts = title | split: '[' %}
-              {% assign clean_title = link_parts[0] %}
+              {% assign link_parts = title | split: '[' -%}
+              {% assign clean_title = link_parts[0] -%}
               {%- for part in link_parts offset: 1 -%}
-                {% assign bracket_parts = part | split: '](' %}
+                {% assign bracket_parts = part | split: '](' -%}
                 {%- if bracket_parts.size > 0 -%}
-                  {% assign clean_title = clean_title | append: bracket_parts[0] %}
+                  {% assign clean_title = clean_title | append: bracket_parts[0] -%}
                   {%- if bracket_parts.size > 1 -%}
-                    {% assign url_end = bracket_parts[1] | split: ')' %}
+                    {% assign url_end = bracket_parts[1] | split: ')' -%}
                     {%- if url_end.size > 1 -%}
-                      {% assign clean_title = clean_title | append: url_end[1] %}
+                      {% assign clean_title = clean_title | append: url_end[1] -%}
                     {%- endif -%}
                   {%- endif -%}
                 {%- endif -%}
               {%- endfor -%}
             {%- endif -%}
-            
-            {% assign title = clean_title | strip %}
-            {% assign anchor = title | slugify %}
-            
+            {% assign title = clean_title | strip -%}
+            {% assign anchor = title | slugify -%}
             <li class="toc-item toc-item--level-{{ level }}">
               <a href="#{{ anchor }}" class="toc-link" data-level="{{ level }}">{{ title }}</a>
             </li>
@@ -113,11 +110,11 @@
   {% endif %}
 </nav>
 
-{% comment %}
+{% comment -%}
   Add JavaScript for smooth scrolling and active highlighting
   This enhances the static TOC with interactive features
-{% endcomment %}
-<script>
+{% endcomment -%}
+<!-- <script>
   document.addEventListener("DOMContentLoaded", function () {
     const tocLinks = document.querySelectorAll(".toc-link");
     const headings = document.querySelectorAll("h2, h3, h4, h5, h6");
@@ -158,4 +155,4 @@
     // Update on scroll
     window.addEventListener("scroll", highlightCurrentSection);
   });
-</script>
+</script> -->

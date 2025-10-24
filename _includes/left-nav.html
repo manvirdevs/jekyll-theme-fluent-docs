@@ -133,9 +133,15 @@
       {% endif %}
     </nav>
   </div>
-  <div class="sidebar-container">
+  <div class="sidebar-footer">
     <!-- {% if site.github.is_project_page %}
       <span><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
     {% endif %} -->
+    {% assign theme_name = site.theme | default: site.remote_theme %}
+    {% if theme_name %}
+    <p>
+      Built using <a href="https://github.com/{{ theme_name }}" target="_blank" rel="noopener">{{ theme_name | split: '/' | last }}</a>
+    </p>
+    {% endif %}
   </div>
 </aside>

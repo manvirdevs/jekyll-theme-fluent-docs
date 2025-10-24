@@ -50,14 +50,15 @@
 
     <div class="topbar-actions">
       {% if site.github.repository_url %}
-      <a href="{{ site.github.repository_url }}" class="nav-link" title="View on GitHub">
-        <!-- <span class="ms-Icon ms-Icon--GitHub"></span> -->
+      <a href="{{ site.github.repository_url }}" class="nav-link" target="_blank" title="View on GitHub" 
+        style="display:inline-flex; align-items: center; gap: var(--spacing-xs);">
+        <span class="ms-Icon ms-Icon--GitHub"></span>
          View on Github
       </a>
       {% endif %}
 
       <fluent-button
-        appearance="subtle"
+        appearance="stealth"
         id="theme-toggle"
         title="Toggle theme"
         class="theme-toggle"

@@ -5,18 +5,18 @@
       <h3 class="toc-title">On this page</h3>
     </div>
 
-    {% include toc.html %}
+    {%- include toc.html -%}
 
     <!-- Additional sidebar content -->
-    {% if page.sidebar_content %}
+    {%- if page.sidebar_content -%}
     <div class="sidebar-content">{{ page.sidebar_content | markdownify }}</div>
-    {% endif %}
+    {%- endif -%}
 
     <!-- Edit page link -->
-    {% if site.github_repo and page.path %}
+    {%- if site.github.repository_url and page.path -%}
     <div class="edit-section">
       <a
-        href="{{ site.github_repo }}/edit/main/{{ page.path }}"
+        href="{{ site.github.repository_url }}/edit/main/docs/{{ page.path }}"
         class="edit-link"
         target="_blank"
         rel="noopener"
@@ -24,17 +24,57 @@
         <span class="ms-Icon ms-Icon--Edit"></span>
         Edit this page
       </a>
+      <a
+        href="{{ site.github.repository_url }}/issues/new?template=ContentFeedback.yml&title=[FEEDBACK]%20{{ page.title | url_encode }}&page-path={{ page.url }}"
+        class="edit-link"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="ms-Icon ms-Icon--Feedback"></span>
+        Report an issue
+      </a>
     </div>
-    {% endif %}
+    {%- endif -%}
 
-    <!-- Last updated info -->
-    {% if page.last_modified_at or page.date %}
+    <!-- Modified on section -->
+    {%- if page.last_modified_date -%}
     <div class="page-meta">
+      <h4 class="meta-title">Modified on</h4>
       <p class="meta-item">
         <span class="ms-Icon ms-Icon--History"></span>
-        Last updated: {{ page.last_modified_at | default: page.date | date: "%B %d, %Y" }}
+        {{ page.last_modified_date | date: "%B %d, %Y" }}
       </p>
+      {%- if page.last_modified_by -%}
+      <p class="meta-author">
+        by {{ page.last_modified_by }}
+      </p>
+      {%- endif -%}
     </div>
-    {% endif %}
+    {%- endif -%}
+
+    <!-- Contributors section -->
+    <!-- {%- if page.contributors and page.contributors_count > 0 -%}
+    <div class="contributors-section">
+      <h4 class="meta-title">Contributors ({{ page.contributors_count }})</h4>
+      <fluent-avatar-group layout="stack">
+        {%- for contributor in page.contributors -%}
+        <fluent-avatar name="{{ contributor.name }}" title="{{ contributor.name }} - {{ contributor.edits }} edit{%- if contributor.edits != 1 -%}s{%- endif -%}"></fluent-avatar>
+        {%- endfor -%}
+      </fluent-avatar-group>
+    </div>
+    {%- endif -%} -->
+    <!-- Contributors section -->
+    {%- if page.contributors and page.contributors_count > 0 -%}
+    <div class="contributors-section">
+      <h4 class="meta-title">Contributors ({{ page.contributors_count }})</h4>
+      <div class="avatar-group">
+        {%- for contributor in page.contributors -%}
+        <div class="avatar" title="{{ contributor.name }} - {{ contributor.edits }} edit{%- if contributor.edits != 1 -%}s{%- endif -%}">
+          {{ contributor.initials }}
+        </div>
+        {%- endfor -%}
+      </div>
+    </div>
+    {%- endif -%}
   </div>
 </aside>
