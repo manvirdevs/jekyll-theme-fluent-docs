@@ -1,0 +1,21 @@
+---
+layout: null
+---
+[
+  {%- assign pageCount = 0 -%}
+  {%- for page in site.pages -%}
+    {%- if page.title and page.url -%}
+      {%- unless page.exclude_from_search or page.url contains '/assets/' or page.url contains '.css' or page.url contains '.js' or page.url contains '.json' or page.url contains '.xml' -%}
+        {%- if pageCount > 0 -%},{%- endif %}
+  {
+    "id": "{{ page.url | replace: '/', '-' | replace: '.html', '' | remove_first: '-' | default: 'home' }}",
+    "title": "{{ page.title | escape }}",
+    "url": "{{ page.url | relative_url }}",
+    "content": {{ page.content | strip_html | normalize_whitespace | jsonify }},
+    "excerpt": "{{ page.excerpt | default: page.content | strip_html | truncatewords: 50 | escape }}"
+  }
+        {%- assign pageCount = pageCount | plus: 1 -%}
+      {%- endunless -%}
+    {%- endif -%}
+  {%- endfor %}
+]

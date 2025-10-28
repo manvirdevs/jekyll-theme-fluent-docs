@@ -82,8 +82,6 @@
   //   });
   // }
 
-  // ...existing code...
-
   // TOC is now generated statically by Jekyll
   // Only handle scroll highlighting for existing TOC using Intersection Observer
   function initTOCScrollHighlight() {
@@ -288,35 +286,329 @@
     });
   }
 
-// ...existing code...
-
   // Search functionality
+  let searchIndex = null;
+  let searchDocuments = null;
+  let searchIndexLoading = false;
+  let searchIndexLoadError = false;
+
   function initSearch() {
     const searchInput = document.getElementById("docs-search");
-
     if (!searchInput) return;
 
-    // Placeholder for search implementation
-    // This could be integrated with Jekyll search plugins or external search services
+    // Load search index
+    loadSearchIndex();
+
+    // Create search results container
+    const searchContainer = searchInput.closest('.search-container');
+    if (!searchContainer) return;
+
+    const resultsContainer = document.createElement('div');
+    resultsContainer.className = 'search-results';
+    resultsContainer.style.display = 'none';
+    searchContainer.appendChild(resultsContainer);
+
+    let searchTimeout = null;
+
+    // Handle input with debouncing
     searchInput.addEventListener("input", function (e) {
-      const query = e.target.value;
-      if (query.length > 2) {
-        // Implement search logic here
-        console.log("Searching for:", query);
+      const query = e.target.value.trim();
+      
+      clearTimeout(searchTimeout);
+      
+      if (query.length === 0) {
+        hideSearchResults(resultsContainer);
+        return;
+      }
+      
+      if (query.length < 2) {
+        return; // Wait for at least 2 characters
+      }
+
+      // Debounce search
+      searchTimeout = setTimeout(function() {
+        performSearch(query, resultsContainer);
+      }, 300);
+    });
+
+    // Handle keyboard interactions
+    searchInput.addEventListener("keydown", function (e) {
+      // Handle Enter key
+      if (e.key === "Enter") {
+        e.preventDefault();
+        
+        // If a result is focused, navigate to it
+        const focusedResult = resultsContainer.querySelector('.search-result-item.focused');
+        if (focusedResult) {
+          window.location.href = focusedResult.href;
+          return;
+        }
+        
+        // Otherwise, trigger immediate search (bypass debounce)
+        const query = e.target.value.trim();
+        if (query) {
+          clearTimeout(searchTimeout);
+          performSearch(query, resultsContainer);
+        }
+      }
+
+      // Handle arrow keys for navigation
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigateResults(resultsContainer, e.key === "ArrowDown" ? 1 : -1);
+      }
+
+      // Handle Escape to close results
+      if (e.key === "Escape") {
+        hideSearchResults(resultsContainer);
+        searchInput.blur();
       }
     });
 
-    // Handle Enter key
-    searchInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const query = e.target.value;
-        if (query.trim()) {
-          // Redirect to search results page or perform search
-          window.location.href = `/search?q=${encodeURIComponent(query)}`;
-        }
+    // Hide results when clicking outside
+    document.addEventListener("click", function(e) {
+      if (!searchContainer.contains(e.target)) {
+        hideSearchResults(resultsContainer);
       }
     });
+
+    // Prevent results from closing when clicking inside
+    resultsContainer.addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
+  }
+
+  function loadSearchIndex() {
+    if (searchIndex) return Promise.resolve();
+    if (searchIndexLoading) return Promise.reject(new Error('Already loading'));
+    if (searchIndexLoadError) return Promise.reject(new Error('Previous load failed'));
+
+    searchIndexLoading = true;
+
+    return fetch('/assets/search.json')
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Search index not found: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        searchDocuments = data;
+        
+        // Build lunr index
+        searchIndex = lunr(function() {
+          this.ref('id');
+          this.field('title', { boost: 10 });
+          this.field('excerpt', { boost: 5 });
+          this.field('content');
+
+          data.forEach(function(doc) {
+            this.add(doc);
+          }, this);
+        });
+        
+        searchIndexLoading = false;
+        return searchIndex;
+      })
+      .catch(function(error) {
+        console.error('Failed to load search index:', error);
+        searchIndexLoading = false;
+        searchIndexLoadError = true;
+        throw error; // Re-throw to propagate the error
+      });
+  }
+
+  function performSearch(query, resultsContainer) {
+    if (!searchIndex || !searchDocuments) {
+      if (searchIndexLoadError) {
+        resultsContainer.innerHTML = '<div class="search-no-results"><span class="ms-Icon ms-Icon--SearchIssue"></span><p>Failed to load search index. Please refresh the page.</p></div>';
+        resultsContainer.style.display = 'block';
+        return;
+      }
+      
+      if (searchIndexLoading) {
+        return; // Already loading, don't trigger again
+      }
+      
+      resultsContainer.innerHTML = '<div class="search-loading">Loading search index...</div>';
+      resultsContainer.style.display = 'block';
+      
+      loadSearchIndex()
+        .then(function() {
+          performSearch(query, resultsContainer);
+        })
+        .catch(function(error) {
+          resultsContainer.innerHTML = '<div class="search-no-results"><span class="ms-Icon ms-Icon--SearchIssue"></span><p>Failed to load search index: ' + error.message + '</p></div>';
+          resultsContainer.style.display = 'block';
+        });
+      return;
+    }
+
+    try {
+      const results = searchIndex.search(query);
+      displayResults(results, query, resultsContainer);
+    } catch (error) {
+      console.error('Search error:', error);
+      // Fallback to simple search
+      const results = searchIndex.search(query + '*');
+      displayResults(results, query, resultsContainer);
+    }
+  }
+
+  function displayResults(results, query, container) {
+    if (results.length === 0) {
+      container.innerHTML = `
+        <div class="search-no-results">
+          <span class="ms-Icon ms-Icon--SearchIssue"></span>
+          <p>No results found for "${escapeHtml(query)}"</p>
+        </div>
+      `;
+      container.style.display = 'block';
+      return;
+    }
+
+    const maxResults = 10;
+    const displayResults = results.slice(0, maxResults);
+    
+    let html = '<div class="search-results-list">';
+    
+    displayResults.forEach(function(result) {
+      const doc = searchDocuments.find(function(d) {
+        return d.id === result.ref;
+      });
+      
+      if (doc) {
+        // Create contextual excerpt that includes the search term
+        const excerpt = getContextualExcerpt(doc, query);
+        html += `
+          <a href="${doc.url}" class="search-result-item">
+            <div class="search-result-title">${highlightText(doc.title, query)}</div>
+            <div class="search-result-excerpt">${excerpt}</div>
+            ${doc.date ? `<div class="search-result-date">${doc.date}</div>` : ''}
+          </a>
+        `;
+      }
+    });
+    
+    if (results.length > maxResults) {
+      html += `<div class="search-results-more">+ ${results.length - maxResults} more results</div>`;
+    }
+    
+    html += '</div>';
+    
+    container.innerHTML = html;
+    container.style.display = 'block';
+  }
+
+  function getContextualExcerpt(doc, query) {
+    const contextLength = 150; // Characters to show around the match
+    const terms = query.toLowerCase().split(/\s+/).filter(function(term) {
+      return term.length >= 2;
+    });
+    
+    // Try to find the query terms in title, excerpt, or content
+    let text = doc.content || doc.excerpt || '';
+    let matchPosition = -1;
+    let matchedTerm = '';
+    
+    // Find the first occurrence of any search term
+    for (let i = 0; i < terms.length; i++) {
+      const term = terms[i];
+      const pos = text.toLowerCase().indexOf(term);
+      if (pos !== -1) {
+        matchPosition = pos;
+        matchedTerm = term;
+        break;
+      }
+    }
+    
+    // If no match found in content, fall back to excerpt or beginning
+    if (matchPosition === -1) {
+      text = doc.excerpt || text;
+      const excerpt = text.substring(0, 200);
+      return highlightText(excerpt + (text.length > 200 ? '...' : ''), query);
+    }
+    
+    // Calculate excerpt boundaries around the match
+    const start = Math.max(0, matchPosition - contextLength / 2);
+    const end = Math.min(text.length, matchPosition + matchedTerm.length + contextLength / 2);
+    
+    let excerpt = text.substring(start, end);
+    
+    // Add ellipsis if not at the beginning/end
+    if (start > 0) {
+      excerpt = '...' + excerpt;
+    }
+    if (end < text.length) {
+      excerpt = excerpt + '...';
+    }
+    
+    // Clean up excerpt (remove extra whitespace)
+    excerpt = excerpt.replace(/\s+/g, ' ').trim();
+    
+    return highlightText(excerpt, query);
+  }
+
+  function highlightText(text, query) {
+    if (!text) return '';
+    
+    // Text is already HTML-escaped from JSON, so don't escape again
+    const terms = query.toLowerCase().split(/\s+/);
+    let highlighted = text;
+    
+    terms.forEach(function(term) {
+      if (term.length < 2) return;
+      const regex = new RegExp('(' + escapeRegex(term) + ')', 'gi');
+      highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+    });
+    
+    return highlighted;
+  }
+
+  function escapeHtml(text) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
+  function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function hideSearchResults(container) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+  }
+
+  function navigateResults(container, direction) {
+    const items = container.querySelectorAll('.search-result-item');
+    if (items.length === 0) return;
+
+    const currentIndex = Array.from(items).findIndex(function(item) {
+      return item.classList.contains('focused');
+    });
+
+    // Remove current focus
+    items.forEach(function(item) {
+      item.classList.remove('focused');
+    });
+
+    let newIndex;
+    if (currentIndex === -1) {
+      newIndex = direction > 0 ? 0 : items.length - 1;
+    } else {
+      newIndex = currentIndex + direction;
+      if (newIndex < 0) newIndex = items.length - 1;
+      if (newIndex >= items.length) newIndex = 0;
+    }
+
+    items[newIndex].classList.add('focused');
+    items[newIndex].scrollIntoView({ block: 'nearest' });
   }
 
   // Smooth scrolling for anchor links

@@ -45,6 +45,22 @@
   --border-radius-sm: 2px;
   --border-radius-md: 4px;
   --border-radius-lg: 6px;
+  
+  // Additional border radius aliases
+  --border-radius-small: 2px;
+  --border-radius-medium: 4px;
+
+  // Neutral color extended palette
+  --color-neutral-background-1: #ffffff;
+  --color-neutral-background-2: #f5f5f5;
+  --color-neutral-background-3: #ebebeb;
+  --color-neutral-foreground-1: #323130;
+  --color-neutral-stroke-1: #e1dfdd;
+  --color-neutral-stroke-2: #d1d1d1;
+  
+  // Brand color extended palette
+  --color-brand-foreground-1: #0078d4;
+  --color-brand-background-2: rgba(0, 120, 212, 0.1);
 
   // Typography
   --font-family-base: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue",
@@ -81,4 +97,15 @@
 
   --color-border: #484644;
   --color-border-hover: #5d5a58;
+  
+  // Extended palette for dark theme
+  --color-neutral-background-1: #1e1e1e;
+  --color-neutral-background-2: #292929;
+  --color-neutral-background-3: #333333;
+  --color-neutral-foreground-1: #ffffff;
+  --color-neutral-stroke-1: #484644;
+  --color-neutral-stroke-2: #3b3a39;
+  
+  --color-brand-foreground-1: #479ef5;
+  --color-brand-background-2: rgba(71, 158, 245, 0.15);
 }
