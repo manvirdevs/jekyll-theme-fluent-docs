@@ -62,7 +62,7 @@
 
         <!-- Main Content Area -->
         <main class="docs-main" role="main">
-          <div class="docs-content">
+          <div class="docs-content" id="top">
             <!-- {% if page.title %}
             <header class="docs-header">
               <h1 class="docs-title">{{ page.title }}</h1>
@@ -78,8 +78,8 @@
 
             <div class="docs-body">{{ content }}</div>
 
-            {% if page.layout == 'post' or page.layout == 'page' %}
             <footer class="docs-footer">
+              {%- if page.layout == 'post' or page.layout == 'page' -%}
               <div class="docs-feedback">
                 <p>Was this page helpful?</p>
                 <div class="feedback-buttons">
@@ -87,8 +87,11 @@
                   <fluent-button appearance="outline" size="small">No</fluent-button>
                 </div>
               </div>
+              {%- endif -%}
+              {%- unless site.back_to_top == false -%}
+                <p><a href="#top" id="back-to-top">Back to top</a></p>
+              {%- endunless -%}
             </footer>
-            {% endif %}
           </div>
         </main>
 
