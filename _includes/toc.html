@@ -46,61 +46,77 @@
     {% assign toc_max_level = site.toc_max_level | default: page.toc_max_level | default: 3 -%}
     {% assign toc_min_level = site.toc_min_level | default: page.toc_min_level | default: 2 -%}
     
+    {% comment %}Track if we're inside a code block{% endcomment %}
+    {% assign in_code_block = false -%}
+    
     <ul class="toc-list" id="toc-list">
       {%- for line in lines -%}
         {% assign trimmed = line | strip -%}
-        {%- if trimmed contains '#' and trimmed != '' -%}
-          {% comment %}Count # characters at start of line{% endcomment %}
-          {% assign level = 0 -%}
-          {% assign title = trimmed -%}
-          
-          {%- if trimmed contains '###### ' -%}
-            {% assign level = 6 -%}
-            {% assign title = trimmed | remove_first: '###### '- %}
-          {%- elsif trimmed contains '##### ' -%}
-            {% assign level = 5 -%}
-            {% assign title = trimmed | remove_first: '##### ' -%}
-          {%- elsif trimmed contains '#### ' -%}
-            {% assign level = 4 -%}
-            {% assign title = trimmed | remove_first: '#### ' -%}
-          {%- elsif trimmed contains '### ' -%}
-            {% assign level = 3 -%}
-            {% assign title = trimmed | remove_first: '### ' -%}
-          {%- elsif trimmed contains '## ' -%}
-            {% assign level = 2 -%}
-            {% assign title = trimmed | remove_first: '## ' -%}
-          {%- elsif trimmed contains '# ' -%}
-            {% assign level = 1 -%}
-            {% assign title = trimmed | remove_first: '# ' -%}
-          {%- endif -%}
-
-          {%- if level >= toc_min_level and level <= toc_max_level -%}
-            {% assign headings_found = true %}
-            {% comment %}Clean markdown links: [Text](URL) -> Text{% endcomment %}
-            {% assign clean_title = title %}
-            {%- if title contains '[' and title contains '](' -%}
-              {% assign link_parts = title | split: '[' -%}
-              {% assign clean_title = link_parts[0] -%}
-              {%- for part in link_parts offset: 1 -%}
-                {% assign bracket_parts = part | split: '](' -%}
-                {%- if bracket_parts.size > 0 -%}
-                  {% assign clean_title = clean_title | append: bracket_parts[0] -%}
-                  {%- if bracket_parts.size > 1 -%}
-                    {% assign url_end = bracket_parts[1] | split: ')' -%}
-                    {%- if url_end.size > 1 -%}
-                      {% assign clean_title = clean_title | append: url_end[1] -%}
-                    {%- endif -%}
-                  {%- endif -%}
-                {%- endif -%}
-              {%- endfor -%}
-            {%- endif -%}
-            {% assign title = clean_title | strip -%}
-            {% assign anchor = title | slugify -%}
-            <li class="toc-item toc-item--level-{{ level }}">
-              <a href="#{{ anchor }}" class="toc-link" data-level="{{ level }}">{{ title }}</a>
-            </li>
+        
+        {% comment %}Check for code fence (``` or ~~~){% endcomment %}
+        {%- if trimmed contains '```' or trimmed contains '~~~' -%}
+          {%- if in_code_block -%}
+            {% assign in_code_block = false -%}
+          {%- else -%}
+            {% assign in_code_block = true -%}
           {%- endif -%}
         {%- endif -%}
+        
+        {% comment %}Only process headings if not in code block{% endcomment %}
+        {%- unless in_code_block -%}
+          {%- if trimmed contains '#' and trimmed != '' -%}
+            {% comment %}Count # characters at start of line{% endcomment %}
+            {% assign level = 0 -%}
+            {% assign title = trimmed -%}
+            
+            {%- if trimmed contains '###### ' -%}
+              {% assign level = 6 -%}
+              {% assign title = trimmed | remove_first: '###### '- %}
+            {%- elsif trimmed contains '##### ' -%}
+              {% assign level = 5 -%}
+              {% assign title = trimmed | remove_first: '##### ' -%}
+            {%- elsif trimmed contains '#### ' -%}
+              {% assign level = 4 -%}
+              {% assign title = trimmed | remove_first: '#### ' -%}
+            {%- elsif trimmed contains '### ' -%}
+              {% assign level = 3 -%}
+              {% assign title = trimmed | remove_first: '### ' -%}
+            {%- elsif trimmed contains '## ' -%}
+              {% assign level = 2 -%}
+              {% assign title = trimmed | remove_first: '## ' -%}
+            {%- elsif trimmed contains '# ' -%}
+              {% assign level = 1 -%}
+              {% assign title = trimmed | remove_first: '# ' -%}
+            {%- endif -%}
+
+            {%- if level >= toc_min_level and level <= toc_max_level -%}
+              {% assign headings_found = true %}
+              {% comment %}Clean markdown links: [Text](URL) -> Text{% endcomment %}
+              {% assign clean_title = title %}
+              {%- if title contains '[' and title contains '](' -%}
+                {% assign link_parts = title | split: '[' -%}
+                {% assign clean_title = link_parts[0] -%}
+                {%- for part in link_parts offset: 1 -%}
+                  {% assign bracket_parts = part | split: '](' -%}
+                  {%- if bracket_parts.size > 0 -%}
+                    {% assign clean_title = clean_title | append: bracket_parts[0] -%}
+                    {%- if bracket_parts.size > 1 -%}
+                      {% assign url_end = bracket_parts[1] | split: ')' -%}
+                      {%- if url_end.size > 1 -%}
+                        {% assign clean_title = clean_title | append: url_end[1] -%}
+                      {%- endif -%}
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+              {% assign title = clean_title | strip -%}
+              {% assign anchor = title | slugify -%}
+              <li class="toc-item toc-item--level-{{ level }}">
+                <a href="#{{ anchor }}" class="toc-link" data-level="{{ level }}">{{ title }}</a>
+              </li>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endunless -%}
       {%- endfor -%}
     </ul>
     
